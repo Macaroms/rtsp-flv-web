@@ -1,0 +1,53 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+<body>
+<script src="flv.min.js"></script>
+<video id="videoElement1"></video>
+<button onclick="playflv1()">播放1</button>
+<video id="videoElement2"></video>
+<button onclick="playflv2()">播放2</button>
+<script>
+    let flvPlayer
+    let flvPlayer2
+    flvLoad()
+    flvLoad2()
+    //自动播放,浏览器不支持
+    function playflv1() {
+        flvPlayer.play();
+    }
+    function playflv2() {
+        flvPlayer2.play();
+    }
+    function flvLoad(){
+        if (flvjs.isSupported()) {
+            let videoElement = document.getElementById('videoElement1');
+            flvPlayer = flvjs.createPlayer({
+                type: 'flv',
+                url: 'http://127.0.0.1:8085/jiangwei/flv/test1',
+            });
+            flvPlayer.attachMediaElement(videoElement);
+            flvPlayer.load();
+        }
+    }
+    function flvLoad2(){
+        if (flvjs.isSupported()) {
+            let videoElement = document.getElementById('videoElement2');
+            flvPlayer2 = flvjs.createPlayer({
+                type: 'flv',
+                url: 'http://127.0.0.1:8085/jiangwei/flv/test2',
+            });
+            flvPlayer2.attachMediaElement(videoElement);
+            flvPlayer2.load();
+        }
+    }
+</script>
+</body>
+</html>
