@@ -3,50 +3,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Document</title>
 </head>
 <body>
 <script src="flv.min.js"></script>
-<video id="videoElement1"></video>
+response   <span id="testStr"></span>
+<button onclick="test()">测试</button>
+<br/>
+<video style="height: 300px;width: 400px" id="videoElement1"></video>
 <button onclick="playflv1()">播放1</button>
-<video id="videoElement2"></video>
+<video style="height: 300px;width: 400px" id="videoElement2"></video>
 <button onclick="playflv2()">播放2</button>
+<video style="height: 300px;width: 400px" id="videoElement3"></video>
+<button onclick="flvPlayer3.play()">播放3</button>
+<video style="height: 300px;width: 400px" id="videoElement4"></video>
+<button onclick="flvPlayer4.play()">播放4</button>
+<video style="height: 300px;width: 400px" id="videoElement5"></video>
+<button onclick="flvPlayer5.play()">播放5</button>
+<video style="height: 300px;width: 400px" id="videoElement6"></video>
+<button onclick="flvPlayer6.play()">播放6</button>
+<video style="height: 300px;width: 400px" id="videoElement7"></video>
+<button onclick="flvPlayer7.play()">播放7</button>
 <script>
+
+    function test(){
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://127.0.0.1:8085/jiangwei/flv/test', true); // true 表示异步请求
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                document.getElementById('testStr').innerText = xhr.responseText;
+                console.log(xhr.responseText); // 获取响应数据
+            } else {
+                console.error(xhr.statusText);
+            }
+        };
+        xhr.onerror = function() {
+            console.error(xhr.statusText);
+        };
+        xhr.send();
+    }
+
     let flvPlayer
     let flvPlayer2
-    flvLoad()
-    flvLoad2()
+    let flvPlayer3
+    let flvPlayer4
+    let flvPlayer5
+    let flvPlayer6
+    let flvPlayer7
+    if (flvjs.isSupported()) {
+        flvLoad()
+        flvLoad2()
+        flvLoad3()
+        flvLoad4()
+        flvLoad5()
+        flvLoad6()
+        flvLoad7()
+    }
+
     //自动播放,浏览器不支持
     function playflv1() {
         flvPlayer.play();
     }
+
     function playflv2() {
         flvPlayer2.play();
     }
-    function flvLoad(){
-        if (flvjs.isSupported()) {
-            let videoElement = document.getElementById('videoElement1');
-            flvPlayer = flvjs.createPlayer({
-                type: 'flv',
-                url: 'http://127.0.0.1:8085/jiangwei/flv/test1',
-            });
-            flvPlayer.attachMediaElement(videoElement);
-            flvPlayer.load();
-        }
+
+    function flvLoad() {
+        console.log("aa")
+        let videoElement = document.getElementById('videoElement1');
+        flvPlayer = flvjs.createPlayer({
+            type: 'flv',
+            url: 'https://127.0.0.1:8085/jiangwei/flv/test1',
+        });
+        flvPlayer.attachMediaElement(videoElement);
+        flvPlayer.load();
     }
-    function flvLoad2(){
-        if (flvjs.isSupported()) {
-            let videoElement = document.getElementById('videoElement2');
-            flvPlayer2 = flvjs.createPlayer({
-                type: 'flv',
-                url: 'http://127.0.0.1:8085/jiangwei/flv/test2',
-            });
-            flvPlayer2.attachMediaElement(videoElement);
-            flvPlayer2.load();
-        }
+
+    function flvLoad2() {
+        let videoElement = document.getElementById('videoElement2');
+        flvPlayer2 = flvjs.createPlayer({
+            type: 'flv',
+            url: 'https://127.0.0.1:8085/jiangwei/flv/test2',
+        });
+        flvPlayer2.attachMediaElement(videoElement);
+        flvPlayer2.load();
+    }
+
+    function flvLoad3() {
+        let videoElement = document.getElementById('videoElement3');
+        flvPlayer3 = flvjs.createPlayer({
+            type: 'flv',
+            url: 'https://127.0.0.1:8085/jiangwei/flv/test3',
+        });
+        flvPlayer3.attachMediaElement(videoElement);
+        flvPlayer3.load();
+    }
+
+    function flvLoad4() {
+        let videoElement = document.getElementById('videoElement4');
+        flvPlayer4 = flvjs.createPlayer({
+            type: 'flv',
+            url: 'https://127.0.0.1:8085/jiangwei/flv/test2',
+        });
+        flvPlayer4.attachMediaElement(videoElement);
+        flvPlayer4.load();
+    }
+
+    function flvLoad5() {
+        let videoElement = document.getElementById('videoElement5');
+        flvPlayer5 = flvjs.createPlayer({
+            type: 'flv',
+            url: 'https://127.0.0.1:8085/jiangwei/flv/test2',
+        });
+        flvPlayer5.attachMediaElement(videoElement);
+        flvPlayer5.load();
+    }
+
+    function flvLoad6() {
+        let videoElement = document.getElementById('videoElement6');
+        flvPlayer6 = flvjs.createPlayer({
+            type: 'flv',
+            url: 'https://127.0.0.1:8085/jiangwei/flv/test2',
+        });
+        flvPlayer6.attachMediaElement(videoElement);
+        flvPlayer6.load();
+    }
+
+    function flvLoad7() {
+        let videoElement = document.getElementById('videoElement7');
+        flvPlayer7 = flvjs.createPlayer({
+            type: 'flv',
+            url: 'https://127.0.0.1:8085/jiangwei/flv/test2',
+        });
+        flvPlayer7.attachMediaElement(videoElement);
+        flvPlayer7.load();
     }
 </script>
 </body>

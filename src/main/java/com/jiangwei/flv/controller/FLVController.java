@@ -5,11 +5,13 @@ import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 
 /**
  * @author jiangwei97@aliyun.com
@@ -17,12 +19,13 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Api(tags = "flv")
 @RestController
+@RequestMapping("/flv")
 public class FLVController {
 
     @Resource
     private IFLVService service;
 
-    @GetMapping(value = "/flv/{channel}")
+    @GetMapping(value = "/{channel}")
     public void open(@PathVariable(value = "channel") String channel,
                       HttpServletResponse response,
                       HttpServletRequest request) {
@@ -30,5 +33,10 @@ public class FLVController {
 		if(StringUtils.isNotBlank(url)){
             service.open(url, response, request);
 		}
+    }
+
+    @GetMapping(value = "/test")
+    public String test() {
+        return "test: " + LocalDateTime.now();
     }
 }

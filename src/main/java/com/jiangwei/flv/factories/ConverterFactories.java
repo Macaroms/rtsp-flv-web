@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import static org.bytedeco.ffmpeg.global.avutil.AV_NOPTS_VALUE;
 
 /**
  * javacv转包装<br/>
@@ -108,12 +109,45 @@ public class ConverterFactories extends Thread implements Converter {
 					writeResponse(headers);
 				}
 				int nullNumber = 0;
+                long startTime = System.currentTimeMillis();
+                long videoTS = 0;
+                long lastDTS = 0;
 				while (runing) {
-					AVPacket k = grabber.grabPacket();
-					if (k != null) {
+					AVPacket packet = grabber.grabPacket();
+					if (packet != null) {
+                        if (packet.pts() == AV_NOPTS_VALUE) {
+                            if (packet.dts() != AV_NOPTS_VALUE) {
+                                packet.pts(packet.dts());
+                                lastDTS = packet.dts();
+                            } else {
+                                packet.pts(lastDTS + 1);
+                                packet.dts(packet.pts());
+                                lastDTS = packet.pts();
+                            }
+                        } else {
+                            if (packet.dts() != AV_NOPTS_VALUE) {
+                                if (packet.dts() < lastDTS) {
+                                    packet.dts(lastDTS + 1);
+                                }
+                            } else {
+                                packet.dts(packet.pts());
+                            }
+                            lastDTS = packet.dts();
+                        }
+                        if (packet.pts() < packet.dts()) {
+                            packet.pts(packet.dts());
+                        }
+                        videoTS = 1000 * (System.currentTimeMillis() - startTime);
+                        if (videoTS < 0 || packet.dts() < 0 || packet.pts() < 0) {
+                            continue;
+                        }
+                        if (videoTS > recorder.getTimestamp()) {
+                            recorder.setTimestamp(videoTS);
+                        }
 						try {
-							recorder.recordPacket(k);
+							recorder.recordPacket(packet);
 						} catch (Exception e) {
+                            log.error(e.getMessage());
 						}
 						if (stream.size() > 0) {
 							byte[] b = stream.toByteArray();
@@ -124,7 +158,7 @@ public class ConverterFactories extends Thread implements Converter {
 								break;
 							}
 						}
-						avcodec.av_packet_unref(k);
+						avcodec.av_packet_unref(packet);
 					} else {
 						nullNumber++;
 						if (nullNumber > 200) {

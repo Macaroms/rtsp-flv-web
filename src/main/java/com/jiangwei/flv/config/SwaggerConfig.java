@@ -23,15 +23,15 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.jiangwei.lyc"))
+                .apis(RequestHandlerSelectors.basePackage("com.jiangwei.flv"))
                 .paths(PathSelectors.any())
                 .build();
     }
 
     private ApiInfo apiInfo(){
         return new ApiInfoBuilder()
-                .title("lychee")
-                .description("lychee")
+                .title("rtsp-flv-web")
+                .description("rtsp-flv-web")
                 .termsOfServiceUrl("http://www.open.com")
                 .version("1.0")
                 .build();

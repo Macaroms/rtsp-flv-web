@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @Slf4j
+
 @SpringBootApplication
 public class AppApplication {
 
