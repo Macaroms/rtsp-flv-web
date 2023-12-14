@@ -3,6 +3,7 @@ package com.jiangwei.flv.factories;
 import com.alibaba.fastjson.util.IOUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.ClientAbortException;
+import org.apache.coyote.CloseNowException;
 import org.bytedeco.ffmpeg.avcodec.AVPacket;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -193,7 +194,7 @@ public class ConverterFactories extends Thread implements Converter {
 			try {
 				ServletOutputStream outputStream = o.getResponse().getOutputStream();
 				outputStream.write(b);
-			} catch (ClientAbortException e) {
+			} catch (ClientAbortException | CloseNowException e) {
 				log.info("移除一个输出");
 				it.remove();
 			} catch (Exception e) {
