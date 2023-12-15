@@ -1,6 +1,7 @@
 package com.jiangwei.flv.factories;
 
 import com.alibaba.fastjson.util.IOUtils;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.coyote.CloseNowException;
@@ -8,6 +9,7 @@ import org.bytedeco.ffmpeg.avcodec.AVPacket;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
+import org.springframework.scheduling.annotation.Async;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletOutputStream;
@@ -16,6 +18,10 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import static org.bytedeco.ffmpeg.global.avutil.AV_NOPTS_VALUE;
 
 /**
@@ -26,7 +32,7 @@ import static org.bytedeco.ffmpeg.global.avutil.AV_NOPTS_VALUE;
  * @author gc.x
  */
 @Slf4j
-public class ConverterFactories extends Thread implements Converter {
+public class ConverterFactories implements Converter, Runnable {
 	public volatile boolean runing = true;
 	/**
 	 * 读流器
@@ -220,11 +226,9 @@ public class ConverterFactories extends Thread implements Converter {
 	 */
 	public void completeResponse(boolean isCloseGrabberAndResponse) {
 		if (isCloseGrabberAndResponse) {
-			Iterator<AsyncContext> it = outEntitys.iterator();
-			while (it.hasNext()) {
-				AsyncContext o = it.next();
-				o.complete();
-			}
+            for (AsyncContext o : outEntitys) {
+                o.complete();
+            }
 		}
 	}
 
@@ -252,11 +256,11 @@ public class ConverterFactories extends Thread implements Converter {
 	@Override
 	public void exit() {
 		this.runing = false;
-		try {
-			this.join();
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
+//		try {
+//			this.join();
+//		} catch (Exception e) {
+//			log.error(e.getMessage(), e);
+//		}
 	}
 
 }

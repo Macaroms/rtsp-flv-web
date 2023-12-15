@@ -25,9 +25,4 @@ public interface Converter {
 	 */
 	void exit();
 
-	/**
-	 * 启动
-	 */
-	void start();
-
 }

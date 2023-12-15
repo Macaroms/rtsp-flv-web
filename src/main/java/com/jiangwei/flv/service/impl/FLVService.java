@@ -7,6 +7,7 @@ import com.jiangwei.flv.factories.ConverterFactories;
 import com.jiangwei.flv.service.IFLVService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.AsyncContext;
@@ -16,7 +17,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 /**
  * @author jiangwei97@aliyun.com
@@ -24,9 +25,22 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Service
-public class FLVService implements IFLVService {
+public class FLVService implements IFLVService, DisposableBean {
 
-    private final ConcurrentHashMap<String, Converter> converters = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Converter> converters = new ConcurrentHashMap<>();
+
+    private static ThreadPoolExecutor executor;
+
+    static {
+        executor = new ThreadPoolExecutor(
+                8,
+                64,
+                60,
+                TimeUnit.SECONDS,
+                new SynchronousQueue<>(),
+                new ThreadPoolExecutor.AbortPolicy()
+        );
+    }
 
     @Override
     public String getUrl(String channel) {
@@ -54,8 +68,13 @@ public class FLVService implements IFLVService {
             List<AsyncContext> outs = Lists.newArrayList();
             outs.add(async);
             ConverterFactories c = new ConverterFactories(url, key, converters, outs);
-            c.start();
-            converters.put(key, c);
+            // c.start();
+            try {
+                executor.submit(c);
+                converters.put(key, c);
+            } catch (RejectedExecutionException e) {
+                System.out.println("暂无可用线程");
+            }
         }
         response.setContentType("video/x-flv");
         response.setHeader("Connection", "keep-alive");
@@ -89,4 +108,10 @@ public class FLVService implements IFLVService {
         return buf.toString();
     }
 
+    @Override
+    public void destroy() {
+        if (executor != null) {
+            executor.shutdown();
+        }
+    }
 }
